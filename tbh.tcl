@@ -102,6 +102,11 @@ proc target {tgt input} {
         error Unbalanced target definition
     }
 
+    # Instantiate all expected values
+    foreach key {title description version help run} {
+        dict set ::targets $tgt $key ""
+    }
+
     foreach {key value} $input {
         dict set ::targets $tgt $key $value
     }
