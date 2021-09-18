@@ -1,0 +1,15 @@
+target "demo" {
+    title       "Demo Target"
+    description "A demo target"
+    version     "1.0"
+
+    help {
+        This is a big help block.
+        The intent is to add some level of documentation to stuff.
+    }
+
+    run {
+        # Executable Tcl code block
+        puts Hello
+    }
+}
