@@ -1,0 +1,24 @@
+helper "shell-exec" {
+    title       "Shell Exec"
+    description "Simple shell execution"
+    version     "1.0"
+
+    args {args}
+
+    body {
+        debug "--- SHELL EXEC ---"
+        debug "SHELL: '$args'"
+
+        if {[cfg debug]} {
+            foreach arg $args {
+                debug "\t> '$arg'"
+            }
+        }
+
+        debug "--- OUTPUT ---"
+
+        # Run the command line
+        catch {exec -- {*}$args <@stdin >@stdout 2>@stderr}
+        debug "--- OUTPUT ---"
+    }
+}
