@@ -44,6 +44,10 @@
 
 set tbhDirs [list [file join $env(HOME) ".tbh"] [file join [pwd] "tbh"]]
 
+if {[lsearch [array names env] TBH_PATH] >= 0} {
+    set tbhDirs [linsert $tbhDirs 0 $env(TBH_PATH)]
+}
+
 # defaults - Stores the default configuration
 
 set defaults [dict create]
@@ -475,6 +479,13 @@ proc printHelp {} {
 # ------------------------------------------------------------------------------
 # 'Main'
 
+
+if {[cfg debug]} {
+    debug tbhDirs:
+    foreach path $tbhDirs {
+        puts "\t> $path"
+    }
+}
 
 # Create the helpers namespace
 namespace eval ::helpers {}
