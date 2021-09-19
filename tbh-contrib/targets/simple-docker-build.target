@@ -1,0 +1,17 @@
+target "simple-docker-build" {
+    title   "Simple Docker Build"
+    version 1.0
+
+    help {
+        Simple example of a simple Docker build.
+
+        Note the usage of cfg in the run block.
+
+        Also note that when you run tbh help target,
+            indentation in this block gets nuked.
+    }
+
+    run {
+        call shell-exec docker build -t "[cfg docker-image]:[cfg docker-tag]" -f ./Dockerfile .
+    }
+}
