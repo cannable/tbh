@@ -61,6 +61,10 @@ set targets [dict create]
 # do that, set debug to 1 here.
 dict set ::defaults debug 1
 
+# Terminal defaults (affects procs that print "nice" output)
+dict set ::defaults term lines 25
+dict set ::defaults term columns 80
+
 # Load app-default settings for now
 set ::config $defaults
 
@@ -140,18 +144,18 @@ proc defaults {input} {
 #           Get config value
 #
 # Arguments:
-#           key Config key
+#           args    Config key (args so we can go any levels deep)
 #
 # Results:
 #           Returns the value for the passed key.
 #           If the key doesn't exist, returns an empty string.
 #
-proc cfg {key} {
-    if {![dict exists $::config $key]} {
+proc cfg {args} {
+    if {![dict exists $::config {*}$args]} {
         return {}
     }
 
-    return [dict get $::config $key]
+    return [dict get $::config {*}$args]
 }
 
 
@@ -326,6 +330,28 @@ foreach cfgDir $tbhDirs {
     }
 }
 
+# ------------------------------------------------------------------------------
+# Terminal Initialization
+
+# Try to get the particulars about the shell
+if {[catch {exec stty -a} output]} {
+    return
+}
+
+debug "Attempting to detect terminal particulars."
+
+# Get lines
+if {[regexp -- {lines (\d+)} $output match lines]} {
+    dict set ::config term lines $lines
+}
+
+# Get columns
+if {[regexp -- {columns (\d+)} $output match columns]} {
+    dict set ::config term columns $columns
+}
+
+debug "\t> lines:   '[cfg term lines]'"
+debug "\t> columns: '[cfg term columns]'"
 
 # ------------------------------------------------------------------------------
 # Script Argument Handling
