@@ -3,7 +3,7 @@ target "buildah-docker-push" {
     version 0.1
 
     help {
-        Builds a container image from a Dockerfile with Buildah.
+        Push a Docker image with Buildah.
     }
 
     run {

@@ -1,0 +1,17 @@
+target "buildah-docker-push-multiarch" {
+    title   "Buildah Docker Push Multiarch"
+    version 0.1
+
+    help {
+        Push many Docker images.
+    }
+
+    run {
+        foreach arch [cfg buildah-arches] {
+            call buildah-docker-push \
+                [cfg buildah-registry] \
+                [cfg buildah-image] \
+                "$arch-[cfg buildah-tag]"
+        }
+    }
+}
