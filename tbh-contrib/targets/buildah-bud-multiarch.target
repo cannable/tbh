@@ -1,0 +1,20 @@
+target "buildah-bud-multiarch" {
+    title   "Buildah BUD Multiarch"
+    version 0.1
+
+    help {
+        Builds multiple images for different architectures from a Dockerfile
+        with Buildah.
+    }
+
+    run {
+        foreach arch [cfg buildah-arches] {
+            call buildah-bud \
+                $arch \
+                [cfg buildah-image] \
+                "$arch-[cfg buildah-tag]" \
+                [cfg buildah-dockerFile] \
+                [cfg buildah-dir]
+        }
+    }
+}
