@@ -1,0 +1,15 @@
+target "buildah-docker-push" {
+    title   "Buildah Docker Push"
+    version 0.1
+
+    help {
+        Builds a container image from a Dockerfile with Buildah.
+    }
+
+    run {
+        call buildah-docker-push \
+            [cfg buildah-registry] \
+            [cfg buildah-image] \
+            [cfg buildah-tag]
+    }
+}

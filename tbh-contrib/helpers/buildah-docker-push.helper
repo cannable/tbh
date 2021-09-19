@@ -19,7 +19,7 @@ helper "buildah-docker-push" {
         catch {exec -- buildah push \
             -f v2s2 \
             "$image:$tag" \
-            "docker://$image:$tag" \
+            "docker://$registry/$image:$tag" \
             <@stdin >@stdout 2>@stderr}
 
         puts [title "buildah-docker-push: done"]
