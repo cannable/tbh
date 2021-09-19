@@ -63,7 +63,7 @@ set targets [dict create]
 # You can set debug to on in command line arguments, but because loading those
 # happens fairly late, you can't really debug command or argument handling. To
 # do that, set debug to 1 here.
-dict set ::defaults debug 1
+dict set ::defaults debug 0
 
 # Terminal defaults (affects procs that print "nice" output)
 dict set ::defaults term lines 25
