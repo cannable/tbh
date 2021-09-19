@@ -79,7 +79,7 @@ set ::config $defaults
 #           Prints arguments to stdout if debug is on
 #
 proc debug {args} {
-    if {[dict get $::config debug]} {
+    if {[cfg debug]} {
         puts {*}$args
     }
 }
@@ -135,6 +135,25 @@ proc defaults {input} {
     }
 }
 
+# cfg --
+#
+#           Get config value
+#
+# Arguments:
+#           key Config key
+#
+# Results:
+#           Returns the value for the passed key.
+#           If the key doesn't exist, returns an empty string.
+#
+proc cfg {key} {
+    if {![dict exists $::config $key]} {
+        return {}
+    }
+
+    return [dict get $::config $key]
+}
+
 
 # ------------------------------------------------------------------------------
 # Execution Procedures
@@ -155,8 +174,9 @@ proc run {tgt} {
         error "Target '$tgt' does not exist."
     }
 
-    if {[dict get ::config debug]} {
+    if {[cfg debug]} {
         printConfig
+        debug "Attempting to run '$tgt'..."
     }
 
     eval [dict get $::targets $tgt run]
@@ -196,8 +216,8 @@ proc printTargets {} {
     dict for {target config} $::targets {
 
         puts "'$target'"
-        puts "  > [dict get $config title], [dict get $config version]"
-        puts "  > [dict get $config description]"
+        puts "  > [cfg title], [cfg version]"
+        puts "  > [cfg description]"
         puts {}
     }
 }
@@ -325,7 +345,7 @@ foreach {arg} [lrange $argv $argsStartIdx end] {
     }
 }
 
-if {[dict get $config debug]} {
+if {[cfg debug]} {
     debug "DEBUG is on"
 }
 
