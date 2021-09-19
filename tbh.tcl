@@ -298,11 +298,12 @@ proc help {tgt} {
 #
 proc printHelpers {} {
     dict for {helper config} $::helpers {
-
-        puts "'$helper'"
-        puts "  > [dict get $config title], [dict get $config version]"
-        puts "  > [dict get $config description]"
-        puts {}
+        puts "$helper:"
+        dict with config {
+            puts "\tTitle:       $title"
+            puts "\tVersion:     $version"
+            puts "\tDescription: $description\n"
+        }
     }
 }
 
@@ -320,10 +321,12 @@ proc printHelpers {} {
 proc printTargets {} {
     dict for {target config} $::targets {
 
-        puts "'$target'"
-        puts "  > [dict get $config title], [dict get $config version]"
-        puts "  > [dict get $config description]"
-        puts {}
+        puts "$target:"
+        dict with config {
+            puts "\tTitle:       $title"
+            puts "\tVersion:     $version"
+            puts "\tDescription: $description\n"
+        }
     }
 }
 
