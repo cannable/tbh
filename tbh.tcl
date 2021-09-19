@@ -276,6 +276,33 @@ proc call {args} {
         {*}[lrange $args 1 end]
 }
 
+# title --
+#
+#           Write a title string
+#
+# Arguments:
+#           text    Title text
+#
+# Results:
+#           returns a "fancy" title line
+#
+proc title {text} {
+    set char -
+    set len [string length $text]
+    set max [cfg term columns]
+
+    # If the title is too long, be lazy and don't do any formatting
+    if {$len >= $max} {
+        return $text
+    }
+
+    set remainder [expr {$max - $len - 5}]
+
+    return [format {%s %s %s} \
+        [string repeat $char 3] \
+        [string toupper $text] \
+        [string repeat $char $remainder]]
+}
 
 
 # ------------------------------------------------------------------------------

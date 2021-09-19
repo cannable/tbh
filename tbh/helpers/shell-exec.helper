@@ -6,19 +6,17 @@ helper "shell-exec" {
     args {args}
 
     body {
-        debug "--- SHELL EXEC ---"
-        debug "SHELL: '$args'"
+        puts [title "shell-exec: begin"]
+        puts "Attempting to run '$args'"
 
-        if {[cfg debug]} {
-            foreach arg $args {
-                debug "\t> '$arg'"
-            }
+        foreach arg $args {
+            puts "\t> '$arg'"
         }
 
-        debug "--- OUTPUT ---"
+        puts [title "shell-exec: output"]
 
         # Run the command line
         catch {exec -- {*}$args <@stdin >@stdout 2>@stderr}
-        debug "--- OUTPUT ---"
+        puts [title "shell-exec: done"]
     }
 }
