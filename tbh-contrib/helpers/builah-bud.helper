@@ -1,0 +1,31 @@
+helper "buildah-bud" {
+    title       "Buildah Build Docker Image"
+    description "Build a container image"
+    version     "0.1"
+
+    args {arch image tag dockerFile dir}
+
+    body {
+        puts [title "buildah-build: begin"]
+
+        puts "image:    $image"
+        puts "tag:      $tag"
+        puts "arch:     $arch"
+
+        puts [title "buildah-build: output"]
+
+        # Run the command line
+        catch {exec -- buildah bud \
+            --arch "$arch" \
+            --tag "$image:$tag" \
+            -f $dockerFile \
+            $dir \
+            <@stdin >@stdout 2>@stderr}
+
+
+        #buildah bud --arch "$arch" --tag "$image:$tag" -f ./Dockerfile .
+        
+
+        puts [title "buildah-build: done"]
+    }
+}

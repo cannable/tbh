@@ -1,0 +1,17 @@
+target "buildah-bud" {
+    title   "Buildah BUD"
+    version 0.1
+
+    help {
+        Builds a container image from a Dockerfile with Buildah.
+    }
+
+    run {
+        call buildah-bud \
+            [cfg buildah-arch] \
+            [cfg buildah-image] \
+            [cfg buildah-tag] \
+            [cfg buildah-dockerFile] \
+            [cfg buildah-dir]
+    }
+}

@@ -1,0 +1,5 @@
+defaults {
+    buildah-image           "replace/me"
+    buildah-image-format    "replace/me"
+    buildah-tag             "latest"
+}
