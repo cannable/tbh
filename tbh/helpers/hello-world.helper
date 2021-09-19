@@ -3,10 +3,10 @@ helper "hello-world" {
     description "Hello World Helper"
     version     "1.0"
 
-    args {}
+    args {blerb}
 
     body {
         # Executable Tcl code block
-        puts "Hello, world"
+        puts $blerb
     }
 }

@@ -261,6 +261,22 @@ proc cfg {args} {
     return [dict get $::config {*}$args]
 }
 
+# call --
+#
+#           Simple wrapper to call helper procs
+#
+# Arguments:
+#           args    All arguments to pass to helper
+#
+# Results:
+#           Runs the helper
+#
+proc call {args} {
+    tailcall "::helpers::[lindex $args 0]" \
+        {*}[lrange $args 1 end]
+}
+
+
 
 # ------------------------------------------------------------------------------
 # Execution Procedures
@@ -336,7 +352,7 @@ proc help {tgt} {
 
     # Print help contents
     foreach line [split [dict get $::targets $tgt help] "\n"] {
-        puts "[regsub -- {^[\t ]+} $line {}]"
+        puts "[regsub -- {^[\t ]+} $line ""]"
     }
 }
 

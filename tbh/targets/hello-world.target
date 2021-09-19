@@ -1,6 +1,6 @@
-target "demo" {
-    title       "Demo Target"
-    description "A demo target"
+target "hello-world" {
+    title       "Hello World"
+    description "Hello World target"
     version     "1.0"
 
     help {
@@ -10,6 +10,6 @@ target "demo" {
 
     run {
         # Executable Tcl code block
-        puts Hello
+        call hello-world [cfg hello-world-string]
     }
 }

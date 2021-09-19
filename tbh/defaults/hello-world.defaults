@@ -1,0 +1,3 @@
+defaults {
+    hello-world-string "Hello, World"
+}

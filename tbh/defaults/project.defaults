@@ -1,4 +1,0 @@
-defaults {
-    tag "cannable/test"
-    registry "docker.io"
-}
