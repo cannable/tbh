@@ -136,6 +136,61 @@ proc helper {name input} {
 }
 
 
+# findTbhFiles --
+#
+#           Locates TBH files that can be loaded
+#
+# Arguments:
+#           type    TBH file type
+#
+# Results:
+#           Returns a list of loadable files
+#
+proc findTbhFiles {type} {
+    set results {}
+
+    # File type vs. expected extension
+    array set extensions {
+        helpers     helper
+        targets     target
+        defaults    defaults
+    }
+
+    # Right off the bat, if the type isn't one we'd expect, bail
+    if {[lsearch [array names extensions] $type] < 0} {
+        error "'$type' is not a valid file type."
+    }
+
+    # Go through all defined Tbh search paths
+    foreach tbhDir $::tbhDirs {
+
+        if {[file isdirectory $tbhDir]} {
+
+            # If we found a directory, let's look for expected subdirs
+            foreach subDir [array names extensions] {
+                set path [file join $tbhDir $subDir]
+
+                # Find potential files
+                set potentials [glob -nocomplain \
+                    -directory $path \
+                    "*.$extensions($type)"]
+
+                foreach file [lsort $potentials]  {
+                    # If these results are files, add them to the results
+                    if {[file isfile $file]} {
+                        lappend results $file
+                    }
+                }
+            }
+        }
+
+    }
+
+    return $results
+
+}
+
+
 # target --
 #
 #           Define a new target
@@ -405,45 +460,30 @@ proc printHelp {} {
 # Create the helpers namespace
 namespace eval ::helpers {}
 
-# Load Config Files
+# Load helpers
+foreach file [findTbhFiles helpers] {
+    debug "Loading helper from $file."
 
-foreach cfgDir $tbhDirs {
-    debug "cfgDir: '$cfgDir'"
-
-    set hlpDir [file join $cfgDir "helpers"]
-    set tgtDir [file join $cfgDir "targets"]
-    set defDir [file join $cfgDir "defaults"]
-
-    foreach file [lsort [glob -nocomplain -directory $hlpDir *.helper]] {
-        debug "Loading helper from $file..."
-
-        # TODO - Replace with something better than source
-        if {[file exists $file]} {
-            source $file
-        }
-        debug "Success... probably... I'm still alive for now."
-    }
-
-    foreach file [lsort [glob -nocomplain -directory $tgtDir *.target]] {
-        debug "Loading target from $file..."
-
-        # TODO - Replace with something better than source
-        if {[file exists $file]} {
-            source $file
-        }
-        debug "Success... probably... I'm still alive for now."
-    }
-
-    foreach file [lsort [glob -nocomplain -directory $defDir *.defaults]] {
-        debug "Loading defaults from $file."
-
-        # TODO - Replace with something better than source
-        if {[file exists $file]} {
-            source $file
-        }
-        debug "Success... probably... I'm still alive for now."
-    }
+    # TODO - Replace with something better than source
+    source $file
 }
+
+# Load targets
+foreach file [findTbhFiles targets] {
+    debug "Loading target from $file."
+
+    # TODO - Replace with something better than source
+    source $file
+}
+
+# Load defaults
+foreach file [findTbhFiles defaults] {
+    debug "Loading defaults from $file."
+
+    # TODO - Replace with something better than source
+    source $file
+}
+
 
 # ------------------------------------------------------------------------------
 # Terminal Initialization
