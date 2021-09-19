@@ -6,13 +6,13 @@ helper "buildah-bud" {
     args {arch image tag dockerFile dir}
 
     body {
-        puts [title "buildah-build: begin"]
+        puts [title "buildah-bud: begin"]
 
         puts "image:    $image"
         puts "tag:      $tag"
         puts "arch:     $arch"
 
-        puts [title "buildah-build: output"]
+        puts [title "buildah-bud: output"]
 
         # Run the command line
         catch {exec -- buildah bud \
@@ -22,10 +22,6 @@ helper "buildah-bud" {
             $dir \
             <@stdin >@stdout 2>@stderr}
 
-
-        #buildah bud --arch "$arch" --tag "$image:$tag" -f ./Dockerfile .
-        
-
-        puts [title "buildah-build: done"]
+        puts [title "buildah-bud: done"]
     }
 }

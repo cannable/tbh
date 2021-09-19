@@ -1,0 +1,27 @@
+helper "buildah-docker-push" {
+    title       "Buildah Docker push"
+    description "Push a container image"
+    version     "0.1"
+
+    args {registry image tag}
+
+    body {
+        puts [title "buildah-docker-push: begin"]
+
+        puts "registry: $registry"
+        puts "format:   $tag"
+        puts "image:    $image"
+        puts "tag:      $tag"
+
+        puts [title "buildah-docker-push: output"]
+
+        # Run the command line
+        catch {exec -- buildah push \
+            -f v2s2 \
+            "$image:$tag" \
+            "docker://$image:$tag" \
+            <@stdin >@stdout 2>@stderr}
+
+        puts [title "buildah-docker-push: done"]
+    }
+}
