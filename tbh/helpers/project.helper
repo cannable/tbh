@@ -1,0 +1,12 @@
+helper "hello-world" {
+    title       "Hello World"
+    description "Hello World Helper"
+    version     "1.0"
+
+    args {}
+
+    body {
+        # Executable Tcl code block
+        puts "Hello, world"
+    }
+}

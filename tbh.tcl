@@ -48,6 +48,10 @@ set tbhDirs [list [file join $env(HOME) ".tbh"] [file join [pwd] "tbh"]]
 
 set defaults [dict create]
 
+# helpers - A single dict that will contain all helper data
+
+set helpers [dict create]
+
 # targets - A single dict that will contain all target data
 
 set targets [dict create]
@@ -86,6 +90,49 @@ proc debug {args} {
     if {[cfg debug]} {
         puts {*}$args
     }
+}
+
+
+# helper --
+#
+#           Define a new helper
+#
+# Arguments:
+#           name    Helper name
+#           input   Key/value pairs of helper configuration data
+#
+# Results:
+#           Defines a new helper, stores metadata in ::helpers, and creates the
+#           proc.
+#
+proc helper {name input} {
+    # Ensure the passed input payload can be read as key/value pairs
+    if {[llength $input] % 2} {
+        error Unbalanced helper definition
+    }
+
+    if {![dict exists $input body]} {
+        error "Helper definition for '$name' does not have a valid body block."
+    }
+
+    if {![dict exists $input args]} {
+        error "Helper definition for '$name' does not have a valid args block."
+    }
+
+    # Define the arbitrary proc (lol)
+    proc "::helpers::$name" [dict get $input args] [dict get $input body]
+
+
+    # Instantiate all expected metadata values
+    foreach key {title description version} {
+        dict set ::helpers $name $key ""
+    }
+
+    # Store metadata
+    foreach {key value} $input {
+        dict set ::helpers $name $key $value
+    }
+
 }
 
 
@@ -239,6 +286,27 @@ proc help {tgt} {
 }
 
 
+# printHelpers --
+#
+#           Print list of targets to stdout
+#
+# Arguments:
+#           none
+#
+# Results:
+#           Prints list of targets to stdout
+#
+proc printHelpers {} {
+    dict for {helper config} $::helpers {
+
+        puts "'$helper'"
+        puts "  > [dict get $config title], [dict get $config version]"
+        puts "  > [dict get $config description]"
+        puts {}
+    }
+}
+
+
 # printTargets --
 #
 #           Print list of targets to stdout
@@ -253,8 +321,8 @@ proc printTargets {} {
     dict for {target config} $::targets {
 
         puts "'$target'"
-        puts "  > [cfg title], [cfg version]"
-        puts "  > [cfg description]"
+        puts "  > [dict get $config title], [dict get $config version]"
+        puts "  > [dict get $config description]"
         puts {}
     }
 }
@@ -318,19 +386,40 @@ proc printHelp {} {
     puts "\t\trun\t\tRun target"
     puts "\t\thelp\t\tPrint help content for a target\n"
 
+    puts "\tHelpers:\n"
+    puts "\t\thelpers\t\tList helpers\n"
+
     puts "\tOther:\n"
     puts "\t\tdefaults\tPrint default settings"
     puts "\t\tdebug\t\tPrint a bunch of debug info\n"
 }
 
 
+# ------------------------------------------------------------------------------
+# 'Main'
+
+
+# Create the helpers namespace
+namespace eval ::helpers {}
+
 # Load Config Files
 
 foreach cfgDir $tbhDirs {
     debug "cfgDir: '$cfgDir'"
 
+    set hlpDir [file join $cfgDir "helpers"]
     set tgtDir [file join $cfgDir "targets"]
     set defDir [file join $cfgDir "defaults"]
+
+    foreach file [lsort [glob -nocomplain -directory $hlpDir *.helper]] {
+        debug "Loading helper from $file..."
+
+        # TODO - Replace with something better than source
+        if {[file exists $file]} {
+            source $file
+        }
+        debug "Success... probably... I'm still alive for now."
+    }
 
     foreach file [lsort [glob -nocomplain -directory $tgtDir *.target]] {
         debug "Loading target from $file..."
@@ -398,6 +487,7 @@ set cmd [lindex $argv 0]
 switch -- $cmd {
     help        {set argsStartIdx 1}
     targets     {set argsStartIdx 1}
+    helpers     {set argsStartIdx 1}
     defaults    {set argsStartIdx 1}
     debug       {set argsStartIdx 1}
 
@@ -426,6 +516,7 @@ if {[cfg debug]} {
 switch -- $cmd {
     help        {help {*}[lindex $argv 1]}
     run         {run $tgt}
+    helpers     printHelpers
     targets     printTargets
     defaults    printDefaults
     debug       {printDefaults; printConfig}
