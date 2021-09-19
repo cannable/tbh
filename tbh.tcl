@@ -139,6 +139,7 @@ proc defaults {input} {
     }
 }
 
+
 # cfg --
 #
 #           Get config value
@@ -226,7 +227,15 @@ proc shell {args} {
 #           Prints help payload for a target to stdout
 #
 proc help {tgt} {
-    puts [dict get $::targets $tgt help]
+    # Print title
+    puts [string repeat - [cfg term columns]]
+    puts [dict get $::targets $tgt title]
+    puts [string repeat - [cfg term columns]]
+
+    # Print help contents
+    foreach line [split [dict get $::targets $tgt help] "\n"] {
+        puts "[regsub -- {^[\t ]+} $line {}]"
+    }
 }
 
 
@@ -297,7 +306,21 @@ proc printConfig {} {
 #           Prints high-level invocation help to stdout
 #
 proc printHelp {} {
-    puts Nothing
+    puts [string repeat - [cfg term columns]]
+    puts "Tcl-based Build Helper (TBH)"
+    puts [string repeat - [cfg term columns]]
+    puts "Written completely in Tcl by CANNABLE.\n"
+
+    puts "Available commands:\n"
+
+    puts "\tTargets:\n"
+    puts "\t\ttargets\t\tList targets"
+    puts "\t\trun\t\tRun target"
+    puts "\t\thelp\t\tPrint help content for a target\n"
+
+    puts "\tOther:\n"
+    puts "\t\tdefaults\tPrint default settings"
+    puts "\t\tdebug\t\tPrint a bunch of debug info\n"
 }
 
 
