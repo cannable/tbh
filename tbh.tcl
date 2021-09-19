@@ -183,6 +183,30 @@ proc run {tgt} {
 }
 
 
+# shell --
+#
+#           Run a shell command
+#
+# Arguments:
+#           args    command and arguments to execute
+#
+# Results:
+#           Runs command and prints output to stdout
+#
+proc shell {args} {
+    puts "SHELL: '$args'"
+
+    if {[cfg debug]} {
+        foreach arg $args {
+            debug "\t> '$arg'"
+        }
+    }
+
+    # Run the command line
+    catch {exec -- {*}$args <@stdin >@stdout 2>@stderr}
+}
+
+
 # ------------------------------------------------------------------------------
 # Interface Procedures
 
