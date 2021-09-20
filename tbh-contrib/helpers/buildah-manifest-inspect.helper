@@ -1,0 +1,16 @@
+helper "buildah-manifest-inspect" {
+    title       "Buildah Inspect Manifest"
+    description "Print manifest contents"
+    version     "0.1"
+
+    args {image tag}
+
+    body {
+        set manifest "$image:$tag"
+        
+        puts "Inspecting '$manifest'."
+        catch {exec -- buildah manifest inspect $manifest \
+            <@stdin >@stdout 2>@stderr}
+
+    }
+}

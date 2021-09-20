@@ -1,0 +1,16 @@
+helper "buildah-manifest-create" {
+    title       "Buildah Manifest Create"
+    description "Create a manifest"
+    version     "0.1"
+
+    args {image tag}
+
+    body {
+        set manifest "$image:$tag"
+        
+        puts "Creating manifest '$manifest'."
+        catch {exec -- buildah manifest create $manifest \
+            <@stdin >@stdout 2>@stderr}
+
+    }
+}

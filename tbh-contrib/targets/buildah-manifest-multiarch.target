@@ -1,0 +1,55 @@
+target "buildah-manifest-multiarch" {
+    title   "Buildah Create Multiarch Manifest"
+    version 0.1
+
+    help {
+        Push many Docker images.
+    }
+
+    run {
+        puts [title "buildah-manifest-multiarch: begin"]
+
+        set manifest "[cfg buildah-image]:[cfg buildah-tag]"
+
+        puts "Remove any existing manifests."
+        puts "An error might be expected"
+
+        call buildah-manifest-rm \
+            [cfg buildah-image] \
+            [cfg buildah-tag]
+
+        call buildah-manifest-create \
+            [cfg buildah-image] \
+            [cfg buildah-tag]
+
+        puts [title "buildah-manifest-multiarch: add arch images"]
+
+        foreach arch [cfg buildah-arches] {
+
+            call buildah-manifest-remote-add-arch \
+                [cfg buildah-registry] \
+                [cfg buildah-image] \
+                [cfg buildah-tag] \
+                $arch
+
+        }
+
+        puts [title "buildah-manifest-multiarch: manifest inspect"]
+        call buildah-manifest-inspect \
+            [cfg buildah-image] \
+            [cfg buildah-tag]
+
+        call buildah-manifest-push \
+            [cfg buildah-registry] \
+            [cfg buildah-image] \
+            [cfg buildah-tag]
+
+        call buildah-manifest-rm \
+            [cfg buildah-image] \
+            [cfg buildah-tag]
+
+        puts [title "buildah-manifest-multiarch: end"]
+    }
+
+
+}

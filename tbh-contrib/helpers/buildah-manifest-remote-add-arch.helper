@@ -1,0 +1,18 @@
+helper "buildah-manifest-remote-add-arch" {
+    title       "Buildah Manifest Add Arch Image"
+    description "Add an architecture-specific image to manifest"
+    version     "0.1"
+
+    args {registry image tag arch}
+
+    body {
+        set manifest "$image:$tag"
+        set archImage "docker://$registry/$image:$arch-$tag"
+
+        puts "\nAdding image '$archImage' to manifest '$manifest'."
+        catch {exec -- buildah manifest add $manifest \
+            "$archImage" \
+            <@stdin >@stdout 2>@stderr}
+
+    }
+}

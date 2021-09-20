@@ -1,0 +1,16 @@
+helper "buildah-manifest-rm" {
+    title       "Buildah Manifest Remove"
+    description "Remove a manifest"
+    version     "0.1"
+
+    args {image tag}
+
+    body {
+        set manifest "$image:$tag"
+
+        puts "Removing manifest '$manifest'."
+        catch {exec -- buildah manifest rm $manifest \
+            <@stdin >@stdout 2>@stderr}
+
+    }
+}

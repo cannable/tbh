@@ -1,0 +1,26 @@
+helper "buildah-manifest-push" {
+    title       "Buildah Manifest push"
+    description "Push a manifest"
+    version     "0.1"
+
+    args {registry image tag}
+
+    body {
+        puts [title "buildah-manifest-push: begin"]
+
+        puts "registry: $registry"
+        puts "image:    $image"
+        puts "tag:      $tag"
+
+        puts [title "buildah-manifest-push: output"]
+
+        # Run the command line
+        catch {exec -- buildah manifest push \
+            -f v2s2 \
+            "$image:$tag" \
+            "docker://$registry/$image:$tag" \
+            <@stdin >@stdout 2>@stderr}
+
+        puts [title "buildah-manifest-push: done"]
+    }
+}
