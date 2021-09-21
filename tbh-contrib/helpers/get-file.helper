@@ -1,0 +1,22 @@
+helper "get-file" {
+    title       "Get File"
+    description "Download a file"
+    version     "0.1"
+
+    args {url out}
+
+    body {
+        puts [title "get-file: begin"]
+        puts "url:  $url"
+        puts "out:  $out"
+        puts [title "get-file: download progress"]
+
+        set cmd [list curl -o $out $url <@stdin >@stdout 2>@stderr]
+        
+        if {[catch {exec -- {*}$cmd}]} {
+            error "Download failed."
+        }
+
+        puts [title "get-file: end"]
+    }
+}
