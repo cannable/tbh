@@ -1,0 +1,21 @@
+helper "get-gpg-keys" {
+    title       "Get GPG Keys"
+    description "Download and import PGP keys"
+    version     "0.1"
+
+    args {url}
+
+    body {
+        puts [title "get-gpg-keys: begin"]
+        puts "url: $url"
+        puts [title "get-gpg-keys: output"]
+
+        set gpgCmd [list curl $url | gpg --import - <@stdin >@stdout 2>@stderr]
+        
+        if {[catch {exec -- {*}$gpgCmd}]} {
+            error "Call to GPG failed. Bailing."
+        }
+
+        puts [title "get-gpg-keys: end"]
+    }
+}

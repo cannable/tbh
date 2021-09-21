@@ -1,0 +1,19 @@
+helper "gpg-verify" {
+    title       "GPG Verify"
+    description "Verify file signature"
+    version     "0.1"
+
+    args {sigFile}
+
+    body {
+        puts [title "gpg-verify: begin"]
+
+        set gpgCmd [list gpg --verify $sigFile <@stdin >@stdout 2>@stderr]
+        
+        if {[catch {exec -- {*}$gpgCmd}]} {
+            error "Call to GPG failed. Bailing."
+        }
+
+        puts [title "gpg-verify: end"]
+    }
+}
