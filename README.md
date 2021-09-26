@@ -204,4 +204,4 @@ defaults {
 
 ## Running
 
-To call your custom target, run `tbh target hello-world`.
+To call your custom target, run `tbh run hello-world`.
