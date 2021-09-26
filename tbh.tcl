@@ -153,38 +153,34 @@ proc helper {name input} {
 proc findTbhFiles {type} {
     set results {}
 
-    # File type vs. expected extension
-    array set extensions {
-        helpers     helper
-        targets     target
+    # File type vs. expected containing directory
+    array set tbhDirs {
+        helper      helpers
+        target      targets
         defaults    defaults
     }
 
+
     # Right off the bat, if the type isn't one we'd expect, bail
-    if {[lsearch [array names extensions] $type] < 0} {
+    if {[lsearch [array names tbhDirs] $type] < 0} {
         error "'$type' is not a valid file type."
     }
 
     # Go through all defined Tbh search paths
     foreach tbhDir $::tbhDirs {
 
-        if {[file isdirectory $tbhDir]} {
+        set path [file join $tbhDir $tbhDirs($type)]
 
-            # If we found a directory, let's look for expected subdirs
-            foreach subDir [array names extensions] {
-                set path [file join $tbhDir $subDir]
+        # Find potential files
+        set potentials [glob -nocomplain \
+            -directory $path \
+            "*.$type"]
 
-                # Find potential files
-                set potentials [glob -nocomplain \
-                    -directory $path \
-                    "*.$extensions($type)"]
-
-                foreach file [lsort $potentials]  {
-                    # If these results are files, add them to the results
-                    if {[file isfile $file]} {
-                        lappend results $file
-                    }
-                }
+        foreach file [lsort $potentials]  {
+            # If these results are files, add them to the results
+            if {[file isfile $file]} {
+                lappend results $file
+                debug "Found $file"
             }
         }
 
@@ -197,14 +193,14 @@ proc findTbhFiles {type} {
 
 # target --
 #
-#           Define a new target
+#           define a new target
 #
-# Arguments:
-#           tgt     Target name
-#           input   Key/value pairs of target configuration data
+# arguments:
+#           tgt     target name
+#           input   key/value pairs of target configuration data
 #
-# Results:
-#           Defines a new target and stores it in ::targets
+# results:
+#           defines a new target and stores it in ::targets
 #
 proc target {tgt input} {
     # Ensure the passed input payload can be read as key/value pairs
@@ -490,28 +486,35 @@ if {[cfg debug]} {
 # Create the helpers namespace
 namespace eval ::helpers {}
 
-# Load helpers
-foreach file [findTbhFiles helpers] {
-    debug "Loading helper from $file."
 
-    # TODO - Replace with something better than source
-    source $file
-}
+# ------------------------------------------------------------------------------
+# Load Helpers, Targets, and Defaults
 
-# Load targets
-foreach file [findTbhFiles targets] {
-    debug "Loading target from $file."
+set types {helper target defaults}
 
-    # TODO - Replace with something better than source
-    source $file
-}
+foreach type $types {
 
-# Load defaults
-foreach file [findTbhFiles defaults] {
-    debug "Loading defaults from $file."
+    # Set up safe child interpreter
+    set child [interp create -safe]
 
-    # TODO - Replace with something better than source
-    source $file
+    foreach cmd $types {
+        if {![string match $cmd $type]} {
+            set body [list error "Unexpected $cmd in a $type file!"]
+            $child eval [list proc $cmd args $body]
+        }
+    }
+
+    interp alias $child $type {} $type
+
+    # Load files
+    foreach file [findTbhFiles $type] {
+        debug "Loading $type from $file."
+
+        $child invokehidden source $file
+
+    }
+
+    interp delete $child
 }
 
 
